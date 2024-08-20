@@ -21,11 +21,11 @@ read_svc_files <- function(file_paths, det){
   return(final_data)
 }
 
-file_paths_Ill <- list.files(path = "./Ill/", pattern = "*.svc", full.names = TRUE)
+file_paths_Ill <- list.files(path = "./data/Ill/", pattern = "*.svc", full.names = TRUE)
 Ill_data <- read_svc_files(file_paths_Ill, "Ill_")
 write.csv(Ill_data, "Ill_patients.csv", row.names = FALSE)
 
-file_paths_Ctrl <- list.files(path = "./Control/", pattern = "*.svc", full.names = TRUE)
+file_paths_Ctrl <- list.files(path = "./data/Control/", pattern = "*.svc", full.names = TRUE)
 Control_data <- read_svc_files(file_paths_Ctrl, "Ctrl_")
 write.csv(Control_data, "Control_patients.csv", row.names = FALSE)
 
