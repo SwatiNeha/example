@@ -78,35 +78,28 @@ head(Ctrl_patients_clean)
 # Loop through each unique ill patient ID and create a separate plot
 for(id in unique(Ill_patients_clean$ID)) {
   patient_data <- Ill_patients_clean %>% filter(ID == id)
-  
-  plot_ill_patient <- ggplot(patient_data, aes(x = x, y = y)) +
-    geom_point(size = 1.5) +
-    labs(
-      title = paste("Spiral for Ill Patient", id),
-      x = "X Coordinate",
-      y = "Y Coordinate"
-    ) +
-    theme_minimal()
-  
-  # Display the plot
-  print(plot_ill_patient)
+  plot(
+    patient_data$x, 
+    patient_data$y,
+    main = paste("Spirals for Ill Patient", id),
+    xlab = "x",
+    ylab = "Y",
+    cex= 0.3
+  )
 }
 
+Ctrl_patients_clean$x <- as.numeric(Ctrl_patients_clean$x)
 # Loop through each unique control patient ID and create a separate plot
 for(id in unique(Ctrl_patients_clean$ID)) {
   patient_data <- Ctrl_patients_clean %>% filter(ID == id)
-  
-  plot_ctrl_patient <- ggplot(patient_data, aes(x = x, y = y)) +
-    geom_point(size = 1.5) +
-    labs(
-      title = paste("Spiral for Control Subject", id),
-      x = "X Coordinate",
-      y = "Y Coordinate"
-    ) +
-    theme_minimal()
-  
-  # Display the plot
-  print(plot_ctrl_patient)
+  plot(
+    patient_data$x, 
+    patient_data$y,
+    main = paste("Spirals for Control Subject", id),
+    xlab = "x",
+    ylab = "Y",
+    cex = 0.3
+  )
 }
 
 ######################## X vs Timestamp ####################
@@ -220,7 +213,7 @@ for(id in unique(Ctrl_patients_clean$ID)) {
     patient_data$timestamp, 
     patient_data$azimuth,
     type="p",
-    main = paste("Time vs. Azimuth for Ctrl Subject", id),
+    main = paste("Azimuth vs. Timestamp for Ctrl Subject", id),
     xlab = "Timestamp (milliseconds)",
     ylab = "Azimuth",
     cex= 0.3
@@ -235,7 +228,7 @@ for(id in unique(Ill_patients_clean$ID)) {
     patient_data$timestamp, 
     patient_data$azimuth,
     type="p",
-    main = paste("Time vs. Azimuth for Ill Patient", id),
+    main = paste("Azimuth vs. Timestamp for Ill Patient", id),
     xlab = "Timestamp (milliseconds)",
     ylab = "Azimuth",
     cex= 0.3
