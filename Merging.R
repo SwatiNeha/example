@@ -1,7 +1,8 @@
 library(dplyr)
 library (ggplot2)
 library(plotly)
-library(dplyr)
+library(scatterplot3d)
+
 
 process_svc_file <- function(file_path, file_id, det) {
   lines <- readLines(file_path)
@@ -64,78 +65,152 @@ Ctrl_patients <- read.csv("Control_patients.csv")
 Ill_patients_clean <- remove_outliers(Ill_patients)
 
 Ctrl_patients_clean <- remove_outliers(Ctrl_patients)
+
 # Save the cleaned data back to CSV
 write.csv(Ill_patients_clean, "Ill_patients_clean.csv", row.names = FALSE)
-write.csv(Ctrl_patients_clean, "Ill_patients_clean.csv", row.names = FALSE)
+write.csv(Ctrl_patients_clean, "Ctrl_patients_clean.csv", row.names = FALSE)
 
 # Check the first few rows of the cleaned data
 head(Ill_patients_clean)
 head(Ctrl_patients_clean)
 
+Ctrl_patients_clean$x <- as.numeric(Ctrl_patients_clean$x)
+Ctrl_patients_clean$y <- as.numeric(Ctrl_patients_clean$y)
+########################## Overall Plots ##############################
 
-# Loop through each unique patient ID and create a separate plot
-for(id in unique(Ill_patients_clean$ID)) {
-  patient_data <- Ill_patients_clean %>% filter(ID == id)
+# Define a function to create all seven plots for a given patient ID
+create_patient_plots <- function(id, data, type) {
+  # Set up the 3x3 layout
+  par(mfrow = c(3, 3))
   
-  plot_ill_patient <- ggplot(patient_data, aes(x = x, y = y)) +
-    geom_point(size = 1.5) +
-    labs(
-      title = paste("Spiral for Ill Patient", id),
-      x = "X Coordinate",
-      y = "Y Coordinate"
-    ) +
-    theme_minimal()
+  patient_data <- data %>% filter(ID == id)
   
-  # Display the plot
-  print(plot_ill_patient)
-}
-
-
-# Loop through each unique control patient ID and create a separate plot
-for(id in unique(Ctrl_patients_clean$ID)) {
-  patient_data <- Ctrl_patients_clean %>% filter(ID == id)
+  # Plot 1: Spirals for Ill Patients
+  plot(
+    patient_data$x, 
+    patient_data$y,
+    main = paste("Spirals for",type, id),
+    xlab = "X",
+    ylab = "Y",
+    cex = 0.3
+  )
   
-  plot_ctrl_patient <- ggplot(patient_data, aes(x = x, y = y)) +
-    geom_point(size = 1.5) +
-    labs(
-      title = paste("Spiral for Control Patient", id),
-      x = "X Coordinate",
-      y = "Y Coordinate"
-    ) +
-    theme_minimal()
+  # Plot 2: X coordinate vs. Timestamp
+  plot(
+    patient_data$timestamp, 
+    patient_data$x,
+    main = paste("X coordinate vs. Timestamp for",type, id),
+    xlab = "Timestamp (milliseconds)",
+    ylab = "X",
+    cex = 0.3
+  )
   
-  # Display the plot
-  print(plot_ctrl_patient)
-}
-
-
-# Loop through each Ill Patient and create a separate plot
-for(id in unique(Ill_patients_clean$ID)) {
-  patient_data <- Ill_patients_clean %>% filter(ID == id)
+  # Plot 3: Y coordinate vs. Timestamp
+  plot(
+    patient_data$timestamp, 
+    patient_data$y,
+    main = paste("Y coordinate vs. Timestamp for",type, id),
+    xlab = "Timestamp (milliseconds)",
+    ylab = "Y",
+    cex = 0.3
+  )
   
-  # Create a base plot with points and lines
+  # Plot 4: Pressure vs. Timestamp
   plot(
     patient_data$timestamp, 
     patient_data$pressure,
-    main = paste("Pressure vs. Timestamp for Ill Patient", id),
+    main = paste("Pressure vs. Timestamp for",type, id),
     xlab = "Timestamp (milliseconds)",
     ylab = "Pressure",
-    cex= 0.1
+    cex = 0.3
   )
-}
-
-
-# Loop through each Ill Patient and create a separate plot
-for(id in unique(Ctrl_patients_clean$ID)) {
-  patient_data <- Ctrl_patients_clean %>% filter(ID == id)
   
-  # Create a base plot with points and lines
+  # Plot 5: Azimuth vs. Timestamp
   plot(
     patient_data$timestamp, 
-    patient_data$pressure,
-    main = paste("Pressure vs. Timestamp for Ctrl Patient", id),
+    patient_data$azimuth,
+    type = "p",
+    main = paste("Azimuth vs. Timestamp for",type, id),
     xlab = "Timestamp (milliseconds)",
-    ylab = "Pressure",
-    cex= 0.1
+    ylab = "Azimuth",
+    cex = 0.3
   )
+  
+  # Plot 6: Altitude vs. Timestamp
+  plot(
+    patient_data$timestamp, 
+    patient_data$altitude,
+    main = paste("Altitude vs. Timestamp for",type, id),
+    xlab = "Timestamp (milliseconds)",
+    ylab = "Altitude",
+    cex = 0.3
+  )
+  
+  # Plot 7: Azimuth vs. Altitude
+  colors <- c("red", "blue") # Adjust the colors and add more if needed
+  pen_states <- unique(patient_data$pen_state)
+  col <- colors[match(patient_data$pen_state, pen_states)]
+  
+  plot(
+    patient_data$altitude, 
+    patient_data$azimuth,
+    main = paste("Azimuth vs. Altitude for",type, id),
+    xlab = "Altitude",
+    ylab = "Azimuth",
+    col = col
+  )
+  legend("topleft", legend = pen_states, col = colors, pch = 10, 
+         title = "Pen State",
+         cex = 0.8,           # Adjust text size (smaller)
+         pt.cex = 0.7,        # Adjust point size (smaller)
+         box.lwd = 1.5,       # Line width of the legend box
+         box.lty = "solid",   # Line type of the legend box
+         inset = 0.02)
+  
+  # Plot 8: 3D Time vs trace
+  scatterplot3d(
+    patient_data$x,              # x-axis: X coordinate
+    patient_data$y,              # y-axis: Y coordinate
+    patient_data$timestamp,      # z-axis: Timestamp
+    xlab = "X coordinate",
+    ylab = "Y coordinate",
+    zlab = "Timestamp (milliseconds)",
+    main = paste("3D Scatter Plot for",type, id),
+    cex.axis = 0.7
+  )
+  
+  # Plot 9: X vs Pressure
+    plot(
+      patient_data$x, 
+      patient_data$pressure,
+      main = paste("X vs Pressure for",type, id),
+      xlab = "X",
+      ylab = "Pressure",
+      cex= 0.3
+    )
+}
+ 
+
+
+# Loop through the first 10 unique patient IDs and create separate plots
+patient_ids <- unique(Ill_patients_clean$ID)
+
+for (id in patient_ids) {
+  # Create a new plot window
+  dev.new()
+  
+  # Generate all plots for the current patient ID
+  create_patient_plots(id, Ill_patients_clean, type= "Ill Patients")
+  readline(prompt = "Press [Enter] to continue to the next patient...")
+}
+
+ctrl_ids <- unique(Ctrl_patients_clean$ID)
+
+for (id in ctrl_ids) {
+  # Create a new plot window
+  dev.new()
+  
+  # Generate all plots for the current patient ID
+  create_patient_plots(id, Ctrl_patients_clean, type= "Control Subjects")
+  readline(prompt = "Press [Enter] to continue to the next subject...")
 }
