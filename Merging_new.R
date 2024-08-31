@@ -82,7 +82,7 @@ for(id in unique(Ill_patients_clean$ID)) {
     patient_data$x, 
     patient_data$y,
     main = paste("Spirals for Ill Patient", id),
-    xlab = "x",
+    xlab = "X",
     ylab = "Y",
     cex= 0.3
   )
@@ -96,7 +96,7 @@ for(id in unique(Ctrl_patients_clean$ID)) {
     patient_data$x, 
     patient_data$y,
     main = paste("Spirals for Control Subject", id),
-    xlab = "x",
+    xlab = "X",
     ylab = "Y",
     cex = 0.3
   )
