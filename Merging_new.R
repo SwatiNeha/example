@@ -204,6 +204,20 @@ for(id in unique(Ctrl_patients_clean$ID)) {
 ######################## Azimuth vs Timestamp ####################
 
 # Loop through each Control Patient and create a separate plot
+for(id in unique(Ill_patients_clean$ID)) {
+  patient_data <- Ill_patients_clean %>% filter(ID == id)
+  
+  # Create a base plot with points and lines
+  plot(
+    patient_data$timestamp, 
+    patient_data$azimuth,
+    type="p",
+    main = paste("Azimuth vs. Timestamp for Ill Patient", id),
+    xlab = "Timestamp (milliseconds)",
+    ylab = "Azimuth",
+    cex= 0.3
+  )
+}
 
 for(id in unique(Ctrl_patients_clean$ID)) {
   patient_data <- Ctrl_patients_clean %>% filter(ID == id)
@@ -220,71 +234,6 @@ for(id in unique(Ctrl_patients_clean$ID)) {
   )
 }
 
-for(id in unique(Ill_patients_clean$ID)) {
-  patient_data <- Ill_patients_clean %>% filter(ID == id)
-  
-  # Create a base plot with points and lines
-  plot(
-    patient_data$timestamp, 
-    patient_data$azimuth,
-    type="p",
-    main = paste("Azimuth vs. Timestamp for Ill Patient", id),
-    xlab = "Timestamp (milliseconds)",
-    ylab = "Azimuth",
-    cex= 0.3
-  )
-}
-
-######################## Azimuth vs Altitude (across pen_state) ####################
-
-# Loop through each Ill Patient and create a separate plot
-
-colors <- c("red", "blue") # Adjust the colors and add more if needed
-pen_states <- unique(Ill_patients_clean$pen_state)
-
-for(id in unique(Ill_patients_clean$ID)) {
-  patient_data <- Ill_patients_clean %>% filter(ID == id)
-  
-  # Assign a color to each pen_state
-  col <- colors[match(patient_data$pen_state, pen_states)]
-  
-  # Create a base plot with points and lines
-  plot(
-    patient_data$altitude, 
-    patient_data$azimuth,
-    main = paste("Azimuth vs. Altitude for Ill Patient", id),
-    xlab = "Altitude",
-    ylab = "Azimuth",
-    col = col
-  )
-  
-  # Add a legend to the plot
-  legend("topright", legend = pen_states, col = colors, pch = 19, title = "Pen State")
-}
-
-
-
-# Loop through each Ctrl Patient and create a separate plot
-
-colors <- c("red", "blue") # Adjust the colors and add more if needed
-pen_states <- unique(Ctrl_patients_clean$pen_state)
-
-for(id in unique(Ctrl_patients_clean$ID)) {
-  patient_data <- Ctrl_patients_clean %>% filter(ID == id)
-  
-  # Create a base plot with points and lines
-  plot(
-    patient_data$altitude, 
-    patient_data$azimuth,
-    main = paste("Azimuth vs. Altitude for Ctrl Subject", id),
-    xlab = "Altitude",
-    ylab = "Azimuth",
-    col = col
-  )
-  
-  # Add a legend to the plot
-  legend("topright", legend = pen_states, col = colors, pch = 19, title = "Pen State")
-}
 
 ######################## Altitude vs Timestamp ####################
 
@@ -316,4 +265,67 @@ for(id in unique(Ctrl_patients_clean$ID)) {
     ylab = "Altitude",
     cex= 0.3
   )
+}
+
+######################## Azimuth vs Altitude (across pen_state) ####################
+
+# Loop through each Ill Patient and create a separate plot
+
+colors <- c("red", "blue") # Adjust the colors and add more if needed
+pen_states <- unique(Ill_patients_clean$pen_state)
+
+for(id in unique(Ill_patients_clean$ID)) {
+  patient_data <- Ill_patients_clean %>% filter(ID == id)
+  
+  # Assign a color to each pen_state
+  col <- colors[match(patient_data$pen_state, pen_states)]
+  
+  # Create a base plot with points and lines
+  plot(
+    patient_data$altitude, 
+    patient_data$azimuth,
+    main = paste("Azimuth vs. Altitude for Ill Patient", id),
+    xlab = "Altitude",
+    ylab = "Azimuth",
+    col = col
+  )
+  
+  # Add a legend to the plot
+  legend("topleft", legend = pen_states, col = colors, pch = 10, 
+         title = "Pen State",
+         cex = 0.8,           # Adjust text size (smaller)
+         pt.cex = 0.7,        # Adjust point size (smaller)
+         box.lwd = 1.5,       # Line width of the legend box
+         box.lty = "solid",   # Line type of the legend box
+         inset = 0.02)   
+}
+
+
+
+# Loop through each Ctrl Patient and create a separate plot
+
+colors <- c("red", "blue") # Adjust the colors and add more if needed
+pen_states <- unique(Ctrl_patients_clean$pen_state)
+
+for(id in unique(Ctrl_patients_clean$ID)) {
+  patient_data <- Ctrl_patients_clean %>% filter(ID == id)
+  
+  # Create a base plot with points and lines
+  plot(
+    patient_data$altitude, 
+    patient_data$azimuth,
+    main = paste("Azimuth vs. Altitude for Ctrl Subject", id),
+    xlab = "Altitude",
+    ylab = "Azimuth",
+    col = col
+  )
+
+  # Add a legend to the plot
+  legend("topleft", legend = pen_states, col = colors, pch = 10, 
+         title = "Pen State",
+         cex = 0.8,           # Adjust text size (smaller)
+         pt.cex = 0.7,        # Adjust point size (smaller)
+         box.lwd = 1.5,       # Line width of the legend box
+         box.lty = "solid",   # Line type of the legend box
+         inset = 0.02)  
 }
